@@ -1,0 +1,96 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    download_dir: "/usr/local/ansible-temp"
+    java_major_vers: 8
+    java_security_folder: "jre/lib/security" # From JAVA_HOME
+    java_us_policy_file: "US_export_policy.jar"
+    java_us_policy_unlimited_md5: "ef6e8eae7d1876d7f05d765d2c2e0529"
+    java_local_policy_file: "local_policy.jar"
+    java_local_policy_unlimited_md5: "dabfcb23d7bf9bf5a201c3f6ea9bfb2c"
+    jce_zip_name: "jce_policy-{{ java_major_vers }}.zip"
+    oracle_headers: "Cookie: oraclelicense=accept-securebackup-cookie"
+    oracle_jce_base_url: http://download.oracle.com/otn-pub/java/jce
+    oracle_jce_full_url: "{{ oracle_jce_base_url }}/{{ java_major_vers }}/{{ jce_zip_name }}"
+
+  tasks:
+    - name: Lookup JAVA_HOME
+      set_fact:
+        java_home: "{{ lookup('env', 'JAVA_HOME') }}"
+
+    - name: Ensure JAVA_HOME is set and not an empty string
+      assert:
+        that: not((java_home is undefined) or (java_home is none) or (java_home|trim == ''))
+        msg: "The environment variable JAVA_HOME is not set or is empty."
+
+    - name: Check existing US export policy file
+      stat:
+        path: "{{ java_home }}/{{ java_security_folder }}/{{ java_us_policy_file }}"
+      register: us_export_stat
+
+    - name: Check existing local policy file
+      stat:
+        path: "{{ java_home }}/{{ java_security_folder }}/{{ java_local_policy_file }}"
+      register: local_export_stat
+
+    - name: Compare US export policy file md5
+      command: test {{ us_export_stat.stat.md5 }} = {{ java_us_policy_unlimited_md5 }}
+      register: us_export_check
+      failed_when: us_export_check.stderr
+      changed_when: "us_export_check.rc != 0"
+
+    - name: Compare Local export policy file md5
+      command: test {{ local_export_stat.stat.md5 }} = {{ java_local_policy_unlimited_md5 }}
+      register: local_export_check
+      failed_when: local_export_check.stderr
+      changed_when: "local_export_check.rc != 0"
+
+    # If either md5 is unexpected, try to download and install jce
+    - block:
+      - name: Ensure download directory exists
+        file:
+          path: "{{ download_dir }}"
+          state: directory
+      - name: Check existence of JCE policy zip in downloads folder
+        stat:
+          path: "{{ download_dir }}/{{ jce_zip_name }}"
+        register: jce_stat
+      - name: Download JCE policy zip
+        get_url:
+          url: "{{ oracle_jce_full_url }}"
+          headers: "{{ oracle_headers }}"
+          dest: "{{ download_dir }}"
+        when: "{{ jce_stat.stat.exists }} == false"
+      - name: Unpack the JCE policy zip
+        unarchive:
+          copy: no
+          src: "{{ download_dir }}/{{ jce_zip_name }}"
+          dest: "{{ download_dir }}"
+      - name: Find extracted JCE policy files
+        find:
+          paths: "{{ download_dir }}"
+          patterns: "{{ java_us_policy_file }}|{{ java_local_policy_file }}"
+          recurse: yes
+          use_regex: True
+        register: jce_policy_files
+      - name: Backup then copy JCE policy files
+        with_items: "{{ jce_policy_files.files | default([]) }}"
+        copy:
+          backup: yes
+          src: "{{ item.path }}"
+          dest: "{{ java_home }}/{{ java_security_folder }}/{{ item.path | basename }}"
+      when: local_export_check.changed or us_export_check.changed
+
+    - name: Check state of download directory
+      stat:
+        path: "{{ download_dir }}"
+      register: download_dir_stat
+
+    - name: Clean up download directory
+      file:
+        path: "{{ download_dir }}"
+        state: absent
+      when: download_dir_stat.stat.exists is defined
