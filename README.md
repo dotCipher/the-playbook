@@ -1,4 +1,10 @@
 The Playbook
 ============
 
-Ansible scripts for things...
+#### Setup
+
+Run the bootstrap script:
+
+` ./scripts/bootstrap`
+
+
