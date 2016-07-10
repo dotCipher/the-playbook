@@ -4,6 +4,17 @@
   vars:
     homebrew_installed_packages:
       - pv
+      - docker
+      - docker-compose
+      - docker-machine
+      - hub
+      - gradle
+      - groovy
+      - jenv
+      - watch
+      - tree
+      - python
+      - python3
 
   roles:
     - { role: geerlingguy.homebrew }

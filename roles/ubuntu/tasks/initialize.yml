@@ -1,0 +1,7 @@
+---
+- hosts: all
+  gather_facts: false
+
+  tasks:
+    - name: install python2
+      raw: sudo apt-get -y install python-simplejson
