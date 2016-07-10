@@ -1,2 +1,0 @@
-[pixel]
-megalith.cloud:31337 ansible_connection=ssh ansible_user=ubuntu
