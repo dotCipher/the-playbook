@@ -3,5 +3,6 @@
   gather_facts: false
 
   tasks:
-    - name: install python2
+
+    - name: Install Ansible dependencies (python2 / python-simplejson)
       raw: sudo apt-get -y install python-simplejson

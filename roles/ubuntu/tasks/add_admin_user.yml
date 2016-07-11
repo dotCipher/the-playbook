@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    admin_username: dotcipher
+
+  tasks:
+
+    - name: Create remote user reflecting local user with admin group
+      user:
+        name: "{{ admin_username }}"
+        group: admin
+
+# Call other playbooks
+
+- include: passwordless_sudo.yml
+
+- include: passwordless_ssh.yml
