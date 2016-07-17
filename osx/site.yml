@@ -1,7 +1,10 @@
 ---
-- hosts: all
+# This playbook deploys all osx tasks
+- hosts: localhost
+  remote_user: root
 
   vars:
+    # Ensure all homebrew packages are installed
     homebrew_installed_packages:
       - pv
       - docker

@@ -5,15 +5,17 @@
 
   vars:
     admin_username: dotcipher
+    admin_password: $6$rounds=656000$7qxQtHSYIpLanyyY$D31c4hiC9FEkcYpSPRDrZqjIvSQcjx/1zW.pCAL74Xz5hJwDqdN3sqlUWHp5HG56aW4xBXO2X0OCn8..dy4l91
 
   tasks:
 
     - name: Create remote user reflecting local user with admin group
       user:
         name: "{{ admin_username }}"
+        append: yes
         group: admin
-
-# Call other playbooks
+        password: "{{ admin_password }}"
+        update_password: always
 
 - include: passwordless_sudo.yml
 
