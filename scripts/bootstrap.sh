@@ -25,4 +25,4 @@ echo -e "\n\n"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-ansible-galaxy install -r "$DIR/../requirements.yml"
+ansible-galaxy install -r "$DIR/../osx/requirements.yml"
