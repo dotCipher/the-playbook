@@ -1,0 +1,14 @@
+---
+#- hosts: all
+#  become: yes
+#  become_method: sudo
+#
+#  tasks:
+
+- name: Create remote user with admin group
+  user:
+    name: "{{ username }}"
+    append: yes
+    group: admin
+    password: "{{ password }}"
+    update_password: always

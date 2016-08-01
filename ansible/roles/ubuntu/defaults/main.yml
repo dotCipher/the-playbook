@@ -1,0 +1,9 @@
+---
+# defaults file for ubuntu
+ansible_user: 'ubuntu'
+ansible_password: 'ubuntu'
+ansible_become_password: 'ubuntu'
+
+ansible_ssh_user: 'ubuntu'
+ansible_ssh_password: 'ubuntu'
+ansible_sudo_password: 'ubuntu'

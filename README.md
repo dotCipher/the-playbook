@@ -1,7 +1,7 @@
 The Playbook
 ============
 
-Automation galore! Ansible and other associated scripts for automation.
+Automation galore! Ansible and other associated scripts.
 
 #### Setup
 

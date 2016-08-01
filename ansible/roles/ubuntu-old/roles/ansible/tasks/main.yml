@@ -1,0 +1,12 @@
+---
+#- hosts: all
+#  gather_facts: false
+#
+#  vars:
+#    ansible_ssh_user: "{{ username }}"
+#    ansible_sudo_pass: "{{ password }}"
+#
+#  tasks:
+
+- name: Install Ansible dependencies (python-simplejson)
+  raw: sudo apt-get -y install python-simplejson

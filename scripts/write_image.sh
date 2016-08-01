@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DEVICE_NAME="PIXEL"
-IMAGE_FILE_PATH=/Users/cmoore/Desktop/ubuntu-minimal-16.04-server-armhf-raspberry-pi.img
+IMAGE_FILE_PATH=/Users/cmoore/Downloads/ubuntu-minimal-16.04-server-armhf-raspberry-pi.img
 DEVICE=/dev/disk2
 
 FILESIZE_IN_BYTES=$(stat -c%s $IMAGE_FILE_PATH)

@@ -1,0 +1,15 @@
+---
+#- hosts: all
+#  become: yes
+#  become_method: sudo
+#
+#  vars:
+#    username: "{{ ansible_user }}"
+#
+#  tasks:
+
+    - name: Setup passwordless sudo
+      include: sudo.yml
+
+    - name: Setup passwordless ssh
+      include: ssh.yml

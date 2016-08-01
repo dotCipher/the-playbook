@@ -1,0 +1,16 @@
+---
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    default_username: 'ubuntu'
+    default_password: 'ubuntu'
+
+
+  roles:
+     - { role: ansible, ansible_ssh_user: "{{ default_username }}", ansible_sudo_password: "{{ default_password }}" }
+     - { role: passwordless, ansible_ssh_user: "{{ default_username }}", ansible_sudo_password: "{{ default_password }}"}
+     - { role: admin_user, username: "{{ admin_username }}", password: "{{ admin_username }}" }
+     - { role: passwordless, username: "{{ admin_username }}", password: "{{ admin_username }}"}
+
