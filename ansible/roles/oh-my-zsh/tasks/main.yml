@@ -1,0 +1,53 @@
+---
+- hosts: all
+
+  vars:
+    local_tmp: "~/.ansible/tmp"
+    zsh_install_url: "https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh"
+    zsh_theme: bureau
+
+  tasks:
+
+    - name: Install requirements
+      package:
+        name: "{{ item }}"
+        state: present
+      become: yes
+      become_method: sudo
+      with_items:
+        - zsh
+        - git
+
+    - name: Ensure ansible temp exists
+      file:
+        path: "{{ local_tmp }}"
+        recurse: yes
+        state: directory
+
+    - name: Lookup zsh path
+      shell: which zsh
+      register: zsh_path
+
+    - name: Download oh-my-zsh installer
+      get_url:
+        url: "{{ zsh_install_url }}"
+        dest: "{{ local_tmp }}/install_zsh.sh"
+        mode: 0750
+
+    - name: Run oh-my-zsh installer
+      shell: "{{ local_tmp }}/install_zsh.sh"
+      register: run_install
+
+    - name: "Set shell of {{ ansible_user }} to zsh"
+      user:
+        name: "{{ ansible_user }}"
+        shell: "{{ zsh_path.stdout }}"
+      become: yes
+      become_method: sudo
+
+    - name: "Switch default theme to {{ zsh_theme }}"
+      lineinfile:
+        dest: ~/.zshrc
+        state: present
+        regexp: '^ZSH_THEME="(.*)"'
+        line: 'ZSH_THEME="{{ zsh_theme }}"'

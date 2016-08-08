@@ -1,38 +1,57 @@
-Ubuntu
-======
+Ubuntu Automation
+=============
 
-Initializes and configures a basic Ubuntu installation.
+A role containing linux automation tasks for management of ubuntu distributions.
 
-Requirements
-------------
+**NOTE:** The commands below assume that the default user is `unbuntu`, but feel free to change the argument `--user=ubuntu` to whatever the default user is.
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+### Tasks
 
-Role Variables
---------------
+#### Step by Step
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Install Ansible deps on the remote system in order to run most of the playbooks *(enter the user password at prompt)*:
 
-Dependencies
-------------
+`ansible-playbook -i hosts/somehost roles/ubuntu/tasks/ansible.yml --user=ubuntu --ask-pass`
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Enable passwordless SSH in order to remove all future password prompts for running playbooks *(enter the sudo password at prompt)*:
 
-Example Playbook
-----------------
+`ansible-playbook -i hosts/somehost roles/ubuntu/tasks/passwordless_ssh.yml --user=ubuntu --ask-become-pass`
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+Finally generate a new admin user for you to use for all future playbooks *(enter the sudo password at prompt)*:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+`ansible-playbook -i hosts/somehost roles/ubuntu/tasks/add_admin_user.yml --user=ubuntu --ask-become-pass`
 
-License
--------
+Or if you want to create a user named something different than the default (`dotcipher`) then use this command:
 
-BSD
+`ansible-playbook -i hosts/somehost roles/ubuntu/tasks/add_admin_user.yml --user=ubuntu --ask-become-pass -e "admin_username=jsmith"`
 
-Author Information
-------------------
+#### One Liner
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+Run all setup tasks on system *(enter the sudo password at prompt)*:
+
+`ansible-playbook -i hosts/somehost roles/ubuntu/tasks/main.yml --user=ubuntu --ask-become-pass`
+
+
+<!-- On your host system make sure a few things are in order before running the tasks:
+
+When SSH-ed in as the user you plan to run the commands under, make sure that your public SSH key is trusted:
+
+On your local machine, run:
+
+`cat ~/.ssh/id_rsa.pub`
+
+Copy the output and then run this on your Ubuntu machine:
+
+**(Replace `$EDITOR` with your preferred editor like `nano`, `vi`, `vim`, `emacs`, etc)**
+
+`mkdir -p ~/.ssh && $EDITOR ~/.ssh/authorized_keys`
+
+Then we need to setup the user as a sudoer by adding the following line to `/etc/sudoers`:
+
+**(Replace `$USERNAME` with the user you plan to run commands under)**
+
+`$USERNAME            ALL = (ALL) NOPASSWD: ALL`
+
+
+
+ -->

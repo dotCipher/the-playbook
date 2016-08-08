@@ -3,3 +3,4 @@
 
   roles:
     - ubuntu
+    - oh-my-zsh

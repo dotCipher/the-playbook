@@ -1,3 +1,21 @@
 ---
-# tasks file for ubuntu
-- include: ansible.yml
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+    - name: Install Ansible dependencies
+      include: ansible.yml
+
+    - name: Add user account to hosts
+      include: add_admin_user.yml
+
+    - name: Enable passwordless sudo for the user
+      include: passwordless_sudo.yml
+
+    - name: Enable passwordless SSH for the user
+      include: passwordless_ssh.yml
+
+    - name: Install all base packages
+      include: packages.yml
