@@ -1,0 +1,2 @@
+---
+- include: filesystem_case_sensitivity.yml

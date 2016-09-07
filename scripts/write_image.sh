@@ -1,7 +1,8 @@
 #!/bin/bash
 
-DEVICE_NAME="PIXEL"
-IMAGE_FILE_PATH=/Users/cmoore/Downloads/ubuntu-minimal-16.04-server-armhf-raspberry-pi.img
+DEVICE_NAME="WindowsTen"
+#IMAGE_FILE_PATH=/Users/cmoore/Downloads/ubuntu-minimal-16.04-server-armhf-raspberry-pi.img
+IMAGE_FILE_PATH=/Users/cmoore/windows-10/Windows_10_AIO_22in1_x86_x64.iso
 DEVICE=/dev/disk2
 
 FILESIZE_IN_BYTES=$(stat -c%s $IMAGE_FILE_PATH)

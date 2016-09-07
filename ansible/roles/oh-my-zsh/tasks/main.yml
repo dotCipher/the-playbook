@@ -37,13 +37,23 @@
     - name: Run oh-my-zsh installer
       shell: "{{ local_tmp }}/install_zsh.sh"
       register: run_install
+      ignore_errors: yes
 
-    - name: "Set shell of {{ ansible_user }} to zsh"
+    - name: "Set shell of {{ ansible_user_id }} to zsh"
       user:
-        name: "{{ ansible_user }}"
+        name: "{{ ansible_user_id }}"
         shell: "{{ zsh_path.stdout }}"
       become: yes
       become_method: sudo
+      register: set_shell
+      ignore_errors: yes
+
+    - name: "Add line in .bashrc if unable to set shell"
+      lineinfile:
+        dest: ~/.bashrc
+        state: present
+        line: '$(which zsh)'
+      when: set_shell.failed == true
 
     - name: "Switch default theme to {{ zsh_theme }}"
       lineinfile:

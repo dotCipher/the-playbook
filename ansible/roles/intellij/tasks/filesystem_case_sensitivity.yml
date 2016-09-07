@@ -1,0 +1,50 @@
+---
+- hosts: all
+
+#For OS X systems, you have to make a copy of the idea.vmoptions file in the IDE preferences folder and then edit this copy. The reason is that app bundle is signed and you should not modify any files inside the bundle
+
+#Since version 12.0.0:
+ #The file /Applications/IntelliJ Idea XX.app/bin/idea.vmoptions or /Applications/IntelliJ Idea CE XX.app/bin/idea.vmoptions should be copied to ~/Library/Preferences/IntelliJIdeaXX/idea.vmoptions or ~/Library/Preferences/IdeaICXX/idea.vmoptions
+
+ #Since version 14.0.0:
+ #The file /Applications/IntelliJ Idea XX.app/Contents/bin/idea.vmoptions or /Applications/IntelliJ Idea CE XX.app/Contents/bin/idea.vmoptions should be copied to ~/Library/Preferences/IntelliJIdeaXX/idea.vmoptions or ~/Library/Preferences/IdeaICXX/idea.vmoptions
+
+  vars:
+    intellij_app_regex: '(?i)IntelliJ IDEA(?: )?(?:CE )?(?:[0-9]*\.*)*.app'
+    vmoptions_file: 'idea.vmoptions'
+
+  tasks:
+
+    # MacOSX specific
+    - block:
+
+      - name: Find all installations of Intellij
+        find:
+          paths: "/Applications"
+          patterns: "{{ intellij_app_regex }}"
+          use_regex: True
+          file_type: directory
+        register: intellij_installations
+
+      - name: "Find all {{ vmoptions_file }} files within all installations of Intellij"
+        find:
+          paths: "{{ item.path }}"
+          patterns: "{{ vmoptions_file }}"
+          file_type: file
+          recurse: yes
+        with_items: "{{ intellij_installations.files }}"
+        register: vmoptions_files
+
+      - debug:
+          msg: "{{ item.path | basename }}"
+        with_items: "{{ intellij_installations.files }}"
+
+#      - debug:
+#          var: vmoptions_files
+
+
+#      - name: "Copy {{ vmoptions_file }} files "
+      #  ~/Library/Preferences/IntelliJIdeaXX/idea.vmoptions
+      #  ~/Library/Preferences/IdeaICXX/idea.vmoptions
+
+      when: ansible_distribution == "MacOSX"
