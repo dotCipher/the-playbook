@@ -1,0 +1,24 @@
+---
+# https://help.ubuntu.com/community/IptablesHowTo#Saving_iptables
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  vars:
+    load_script: iptablesload
+    save_script: iptablessave
+
+  tasks:
+
+    - name: Save current iptables rules
+      raw: iptables-save > /etc/iptables.rules
+
+    - name: Copy iptablesload to remote fs
+      copy:
+        src: "{{ role_path }}/files/{{ iptablesload }}"
+        dest: "/etc/network/if-pre-up.d/{{ iptablessave }}"
+
+    - name: Copy iptablessave to remote fs
+      copy:
+        src: "{{ role_path }}/files/{{ iptablessave }}"
+        dest: "{{ role_path }}/files/{{ iptablessave }}"
